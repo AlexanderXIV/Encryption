@@ -35,7 +35,7 @@ when isMainModule:
     doAssert val == decrypt(encrypt(val, key), key)
 
 # > nim c -d:danger --opt:speed -r .\main.nim
-# const balance: 35.0 ms
-# CPU Time [encrypt] 0.314s, per cycle: 279 ns, 54.691 MB/s
-# CPU Time [decrypt] 0.678s, per cycle: 642 ns, 23.731 MB/s
-# CPU Time [encrypt / decrypt] 0.976s, per cycle: 940 ns, 16.216 MB/s
+# const balance: 36.0 ms
+# CPU Time [encrypt] 0.235s, per cycle: 199 ns, 76.294 MB/s
+# CPU Time [decrypt] 0.476s, per cycle: 440 ns, 34.679 MB/s
+# CPU Time [encrypt / decrypt] 0.700s, per cycle: 663 ns, 22.980 MB/s
