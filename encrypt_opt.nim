@@ -59,111 +59,6 @@ const rounds = 9
 
 type Block = array[N, uint8]
 
-proc sub_bytes(data: var Block) =
-  data[0] = save_box[data[0]]
-  data[1] = save_box[data[1]]
-  data[2] = save_box[data[2]]
-  data[3] = save_box[data[3]]
-
-  data[4] = save_box[data[4]]
-  data[5] = save_box[data[5]]
-  data[6] = save_box[data[6]]
-  data[7] = save_box[data[7]]
-
-  data[8] = save_box[data[8]]
-  data[9] = save_box[data[9]]
-  data[10] = save_box[data[10]]
-  data[11] = save_box[data[11]]
-
-  data[12] = save_box[data[12]]
-  data[13] = save_box[data[13]]
-  data[14] = save_box[data[14]]
-  data[15] = save_box[data[15]]
-
-proc shift_rows(data: var Block) =
-  var tmp = data[1]
-  data[1] = data[5]
-  data[5] = data[9]
-  data[9] = data[13]
-  data[13] = tmp
-
-  tmp = data[2]
-  data[2] = data[10]
-  data[10] = tmp
-
-  tmp = data[3]
-  data[3] = data[15]
-  data[15] = data[11]
-  data[11] = data[7]
-  data[7] = tmp
-
-  tmp = data[6]
-  data[6] = data[14]
-  data[14] = tmp
-
-proc mix_columns(data: var Block) =
-  var
-    tmp0 = data[0]
-    tmp1 = data[1]
-    tmp2 = data[2]
-    tmp3 = data[3]
-
-  data[0] = multiplication_2[tmp0] xor multiplication_3[tmp1] xor tmp2 xor tmp3
-  data[1] = tmp0 xor multiplication_2[tmp1] xor multiplication_3[tmp2] xor tmp3
-  data[2] = tmp0 xor tmp1 xor multiplication_2[tmp2] xor multiplication_3[tmp3]
-  data[3] = multiplication_3[tmp0] xor tmp1 xor tmp2 xor multiplication_2[tmp3]
-
-  tmp0 = data[4]
-  tmp1 = data[5]
-  tmp2 = data[6]
-  tmp3 = data[7]
-
-  data[4] = multiplication_2[tmp0] xor multiplication_3[tmp1] xor tmp2 xor tmp3
-  data[5] = tmp0 xor multiplication_2[tmp1] xor multiplication_3[tmp2] xor tmp3
-  data[6] = tmp0 xor tmp1 xor multiplication_2[tmp2] xor multiplication_3[tmp3]
-  data[7] = multiplication_3[tmp0] xor tmp1 xor tmp2 xor multiplication_2[tmp3]
-
-  tmp0 = data[8]
-  tmp1 = data[9]
-  tmp2 = data[10]
-  tmp3 = data[11]
-
-  data[8] = multiplication_2[tmp0] xor multiplication_3[tmp1] xor tmp2 xor tmp3
-  data[9] = tmp0 xor multiplication_2[tmp1] xor multiplication_3[tmp2] xor tmp3
-  data[10] = tmp0 xor tmp1 xor multiplication_2[tmp2] xor multiplication_3[tmp3]
-  data[11] = multiplication_3[tmp0] xor tmp1 xor tmp2 xor multiplication_2[tmp3]
-
-  tmp0 = data[12]
-  tmp1 = data[13]
-  tmp2 = data[14]
-  tmp3 = data[15]
-
-  data[12] = multiplication_2[tmp0] xor multiplication_3[tmp1] xor tmp2 xor tmp3
-  data[13] = tmp0 xor multiplication_2[tmp1] xor multiplication_3[tmp2] xor tmp3
-  data[14] = tmp0 xor tmp1 xor multiplication_2[tmp2] xor multiplication_3[tmp3]
-  data[15] = multiplication_3[tmp0] xor tmp1 xor tmp2 xor multiplication_2[tmp3]
-
-proc add_round_key(data: var Block, key: Block) =
-  data[0] = data[0] xor key[0]
-  data[1] = data[1] xor key[1]
-  data[2] = data[2] xor key[2]
-  data[3] = data[3] xor key[3]
-
-  data[4] = data[4] xor key[4]
-  data[5] = data[5] xor key[5]
-  data[6] = data[6] xor key[6]
-  data[7] = data[7] xor key[7]
-
-  data[8] = data[8] xor key[8]
-  data[9] = data[9] xor key[9]
-  data[10] = data[10] xor key[10]
-  data[11] = data[11] xor key[11]
-
-  data[12] = data[12] xor key[12]
-  data[13] = data[13] xor key[13]
-  data[14] = data[14] xor key[14]
-  data[15] = data[15] xor key[15]
-
 proc makeRoundKey(data: var Block, count: int) =
   data[0] = save_box[data[13]] xor rcon[count] xor data[0]
   data[1] = save_box[data[14]] xor data[1]
@@ -186,18 +81,67 @@ proc makeRoundKey(data: var Block, count: int) =
   data[15] = data[11] xor data[15]
 
 proc encrypt*(data, key: Block): Block =
-  result = data
-  result.add_round_key(key)
+  for i in 0..<N:
+    result[i] = data[i] xor key[i]
 
   var round_key = key
+  var tmp0, tmp1, tmp2: uint8
   for i in 0..<rounds:
     round_key.makeRoundKey(i)
-    result.sub_bytes()
-    result.shift_rows()
-    result.mix_columns()
-    result.add_round_key(round_key)
+
+    tmp0 = save_box[result[1]]
+    result[1] = save_box[result[5]]
+    result[5] = save_box[result[9]]
+    result[9] = save_box[result[13]]
+    result[13] = tmp0
+
+    tmp0 = save_box[result[2]]
+    result[2] = save_box[result[10]]
+    result[10] = tmp0
+
+    tmp0 = save_box[result[3]]
+    result[3] = save_box[result[15]]
+    result[15] = save_box[result[11]]
+    result[11] = save_box[result[7]]
+    result[7] = tmp0
+
+    tmp0 = save_box[result[6]]
+    result[6] = save_box[result[14]]
+    result[14] = tmp0
+
+    for i in countup(0, 12, 4):
+      tmp0 = save_box[result[i]]
+      tmp1 = result[i + 1]
+      tmp2 = result[i + 2]
+
+      result[i] = multiplication_2[tmp0] xor multiplication_3[tmp1] xor tmp2 xor result[i + 3] xor round_key[i]
+      result[i + 1] = tmp0 xor multiplication_2[tmp1] xor multiplication_3[tmp2] xor result[i + 3] xor round_key[i + 1]
+      result[i + 2] = tmp0 xor tmp1 xor multiplication_2[tmp2] xor multiplication_3[result[i + 3]] xor round_key[i + 2]
+      result[i + 3] = multiplication_3[tmp0] xor tmp1 xor tmp2 xor multiplication_2[result[i + 3]] xor round_key[i + 3]
 
   round_key.makeRoundKey(rounds)
-  result.sub_bytes()
-  result.shift_rows()
-  result.add_round_key(round_key)
+
+  result[0] = save_box[result[0]] xor round_key[0]
+  result[4] = save_box[result[4]] xor round_key[4]
+  result[8] = save_box[result[8]] xor round_key[8]
+  result[12] = save_box[result[12]] xor round_key[12]
+
+  tmp0 = save_box[result[1]]
+  result[1] = save_box[result[5]] xor round_key[1]
+  result[5] = save_box[result[9]] xor round_key[5]
+  result[9] = save_box[result[13]] xor round_key[9]
+  result[13] = tmp0 xor round_key[13]
+
+  tmp0 = save_box[result[2]]
+  result[2] = save_box[result[10]] xor round_key[2]
+  result[10] = tmp0 xor round_key[10]
+
+  tmp0 = save_box[result[3]]
+  result[3] = save_box[result[15]] xor round_key[3]
+  result[15] = save_box[result[11]] xor round_key[15]
+  result[11] = save_box[result[7]] xor round_key[11]
+  result[7] = tmp0 xor round_key[7]
+
+  tmp0 = save_box[result[6]]
+  result[6] = save_box[result[14]] xor round_key[6]
+  result[14] = tmp0 xor round_key[14]
