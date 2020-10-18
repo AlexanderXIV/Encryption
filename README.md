@@ -1,6 +1,6 @@
 # Encryption
 Nim encryption libary
 
-- CPU Time [encrypt] 0.838s, per cycle: 838 ns, Megabyte per second: 18.646
-- CPU Time [decrypt] 1.488s, per cycle: 1488 ns, Megabyte per second: 10.501
-- CPU Time [encrypt / decrypt] 2.348s, per cycle: 2348 ns, Megabyte per second: 6.655
+- CPU Time [encrypt] 0.314s, per cycle: 279 ns, 54.691 MB/s
+- CPU Time [decrypt] 0.678s, per cycle: 642 ns, 23.731 MB/s
+- CPU Time [encrypt / decrypt] 0.976s, per cycle: 940 ns, 16.216 MB/s
