@@ -1,4 +1,4 @@
-import times, strutils, random, encrypt, decrypt
+import times, strutils, random, encrypt_opt, decrypt_opt
 
 const count: int = 1000000
 var balance: float = 0.0
@@ -9,7 +9,7 @@ template benchmark*(benchmarkName: string, code: untyped) =
     for i in 0..<count:
       code
     let elapsed = cpuTime() - t0 - balance
-    echo "CPU Time [", benchmarkName, "] ", elapsed.formatFloat(format = ffDecimal, precision = 3), "s", ", per cycle: ", int (elapsed * (1000000000 / count)), " ns, ", ((float count) / elapsed / 65536.0).formatFloat(format = ffDecimal, precision = 3), " MB/s"
+    echo "CPU Time [", benchmarkName, "] ", (elapsed + balance).formatFloat(format = ffDecimal, precision = 3), "s", ", per cycle: ", int (elapsed * (1000000000 / count)), " ns, ", ((float count) / elapsed / 65536.0).formatFloat(format = ffDecimal, precision = 3), " MB/s"
 
 when isMainModule:
   var data: seq[array[16, uint8]]
@@ -36,6 +36,6 @@ when isMainModule:
 
 # > nim c -d:danger --opt:speed -r .\main.nim
 # const balance: 35.0 ms
-# CPU Time [encrypt] 0.838s, per cycle: 838 ns, Megabyte per second: 18.646
-# CPU Time [decrypt] 1.488s, per cycle: 1488 ns, Megabyte per second: 10.501
-# CPU Time [encrypt / decrypt] 2.348s, per cycle: 2348 ns, Megabyte per second: 6.655
+# CPU Time [encrypt] 0.314s, per cycle: 279 ns, 54.691 MB/s
+# CPU Time [decrypt] 0.678s, per cycle: 642 ns, 23.731 MB/s
+# CPU Time [encrypt / decrypt] 0.976s, per cycle: 940 ns, 16.216 MB/s
